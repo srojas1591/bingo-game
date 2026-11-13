@@ -111,6 +111,9 @@
         dashboard.classList.remove('hidden');
         ensureAudio();
 
+        // Render the called numbers grid immediately (empty at start)
+        renderCalledGrid();
+
         // Listen to host state for called numbers and game over
         gameRef.child('host').on('value', (snap) => {
           const data = snap.val();

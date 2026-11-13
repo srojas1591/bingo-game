@@ -51,10 +51,10 @@
       return;
     }
 
-    // Back button — return to index.html
+    // Back button — return to index.html (use relative URL for GitHub Pages)
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '../index.html';
       });
     }
 
@@ -381,7 +381,7 @@
     const returnBtn = document.getElementById('return-btn');
     if (returnBtn) {
       returnBtn.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '../index.html';
       });
     }
 

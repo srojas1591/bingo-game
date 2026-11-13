@@ -1,18 +1,18 @@
 // Service Worker for Bingo PWA — caches app for offline play
-const CACHE_NAME = 'bingo-es-v16';
+const CACHE_NAME = 'bingo-es-v17';
 const ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/js/firebase.config.js?v=16',
-  '/js/firebase-init.js?v=16',
-  '/js/shared.js?v=16',
-  '/js/host.js?v=16',
-  '/js/player.js?v=16',
-  '/styles/host.css?v=16',
-  '/styles/player.css?v=16',
-  '/views/host.html?v=16',
-  '/views/player.html?v=16',
+  '/js/firebase.config.js?v=17',
+  '/js/firebase-init.js?v=17',
+  '/js/shared.js?v=17',
+  '/js/host.js?v=17',
+  '/js/player.js?v=17',
+  '/styles/host.css?v=17',
+  '/styles/player.css?v=17',
+  '/views/host.html?v=17',
+  '/views/player.html?v=17',
 ];
 
 self.addEventListener('install', (event) => {

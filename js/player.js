@@ -115,7 +115,7 @@
           if (!data) {
             if (calledNumbers.length > 0 || gameOver) {
               console.log('[Player] Game reset detected (host data removed)');
-              window.location.href = '/';
+              window.location.href = '../index.html';
             }
             return;
           }
@@ -130,40 +130,45 @@
           if (data.calledNumbers && data.calledNumbers.length === 0 && calledNumbers.length > 0) {
             // Game was reset — redirect to re-join
             console.log('[Player] Game reset detected');
-            window.location.href = '/';
+            window.location.href = '../index.html';
             return;
           }
 
           // Update called numbers
-          if (data.calledNumbers) {
-            const prevCount = calledNumbers.length;
-            calledNumbers = data.calledNumbers;
+          const prevCount = calledNumbers.length;
+          calledNumbers = data.calledNumbers || [];
 
-            if (calledNumbers.length > prevCount) {
+          if (calledNumbers.length > prevCount) {
+            const lastNumber = calledNumbers[calledNumbers.length - 1];
+            const label = labelForNumber(lastNumber);
+
+            // Display the called number
+            currentBall.classList.remove('pop');
+            void currentBall.offsetWidth;
+            currentBall.textContent = label;
+            currentBall.classList.add('pop');
+
+            statusEl.innerHTML = `Sacado: <strong>${lastNumber}</strong> — ${label}`;
+            calledCountEl.textContent = calledNumbers.length;
+
+            // Play sound
+            playCallSound();
+
+            // Update card to show called numbers with orange border
+            renderCard();
+            renderCalledGrid();
+          } else if (prevCount === 0 && !gameScreen.dataset.rendered) {
+            // Initial load — render card and grid with whatever called numbers exist (may be empty)
+            gameScreen.dataset.rendered = '1';
+            calledCountEl.textContent = calledNumbers.length;
+            if (calledNumbers.length > 0) {
               const lastNumber = calledNumbers[calledNumbers.length - 1];
               const label = labelForNumber(lastNumber);
-
-              // Display the called number
-              currentBall.classList.remove('pop');
-              void currentBall.offsetWidth;
               currentBall.textContent = label;
-              currentBall.classList.add('pop');
-
               statusEl.innerHTML = `Sacado: <strong>${lastNumber}</strong> — ${label}`;
-              calledCountEl.textContent = calledNumbers.length;
-
-              // Play sound
-              playCallSound();
-
-              // Update card to show called numbers with orange border
-              renderCard();
-              renderCalledGrid();
-            } else if (prevCount === 0) {
-              // Initial load — render card with existing called numbers
-              calledCountEl.textContent = calledNumbers.length;
-              renderCard();
-              renderCalledGrid();
             }
+            renderCard();
+            renderCalledGrid();
           }
 
           // Check game over
@@ -307,7 +312,7 @@
     const returnBtn = document.getElementById('return-btn');
     if (returnBtn) {
       returnBtn.addEventListener('click', () => {
-        window.location.href = '/';
+        window.location.href = '../index.html';
       });
     }
 

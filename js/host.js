@@ -315,12 +315,23 @@
       callIndex++;
       calledNumbers.push(nextNumber);
 
-      // Write to Firebase
+      // Update UI immediately (don't wait for Firebase listener — it skips host's own writes)
+      const label = labelForNumber(nextNumber);
+      playCallSound();
+      currentBall.classList.remove('pop');
+      void currentBall.offsetWidth;
+      currentBall.textContent = label;
+      currentBall.classList.add('pop');
+      statusEl.innerHTML = `Sacado: <strong>${nextNumber}</strong> — ${label}`;
+      calledCountEl.textContent = calledNumbers.length;
+      renderCalledGrid();
+
+      // Write to Firebase so players see the new number
       db.ref('bingo-game/host').update({
         calledNumbers: calledNumbers,
         callIndex: callIndex
       }).then(() => {
-        console.log('[Host] Number called:', nextNumber, '(', labelForNumber(nextNumber), ')');
+        console.log('[Host] Number called:', nextNumber, '(', label, ')');
       }).catch((err) => {
         console.error('[Host] Error calling number:', err);
       });

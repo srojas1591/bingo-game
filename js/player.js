@@ -120,6 +120,12 @@
             return;
           }
 
+          // Wait for the host to be authenticated before rendering anything
+          if (!data.authenticated) {
+            console.log('[Player] Waiting for host to authenticate...');
+            return;
+          }
+
           // Check if game was reset (new game) — calledNumbers cleared
           if (data.calledNumbers && data.calledNumbers.length === 0 && calledNumbers.length > 0) {
             // Game was reset — redirect to re-join
@@ -185,7 +191,8 @@
           }
         });
 
-        statusEl.textContent = 'Esperando a que el anfitrión saque números...';
+        // Only show status after host is authenticated
+        statusEl.textContent = 'Esperando a que el anfitrión inicie el juego...';
       }).catch((err) => {
         console.error('[Player] Error joining game:', err);
         joinError.textContent = 'Error al unirse al juego. Recarga la página.';

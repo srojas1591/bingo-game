@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <title>Bingo — Anfitrión</title>
+  <link rel="stylesheet" href="/styles/host.css?v=11">
+</head>
+<body>
+  <!-- Matrix animated background -->
+  <div class="background">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Access Code Screen -->
+  <div id="auth-screen" class="screen">
+    <div class="auth-box">
+      <h1>🎱 Bingo</h1>
+      <p class="auth-subtitle">Panel del Anfitrión</p>
+      <p class="auth-instruction">Ingresa el código de acceso para continuar</p>
+      <form id="auth-form">
+        <input type="password" id="access-code" inputmode="numeric" maxlength="4" placeholder="• • • •" autofocus>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+      <p id="auth-error" class="error hidden">Código incorrecto. Intenta de nuevo.</p>
+    </div>
+  </div>
+
+  <!-- Host Dashboard -->
+  <div id="dashboard" class="screen hidden">
+    <div id="app">
+      <header>
+        <button id="back-btn" class="btn btn-back" title="Volver al inicio">← Inicio</button>
+        <h1>🎱 Panel del Anfitrión</h1>
+        <p id="status">Esperando jugadores...</p>
+      </header>
+
+      <!-- Current Ball -->
+      <section id="called-number">
+        <div class="ball" id="current-ball">--</div>
+        <p id="called-label">Número actual</p>
+      </section>
+
+      <!-- Controls -->
+      <section id="controls">
+        <button id="call-btn" class="btn btn-primary" disabled>🎲 Sacar número</button>
+        <button id="new-game-btn" class="btn btn-secondary">🔄 Nuevo juego</button>
+      </section>
+
+      <!-- Called Numbers Counter -->
+      <section id="called-info">
+        <p>Números sacados: <strong id="called-count">0</strong>/75</p>
+      </section>
+
+      <!-- Classification Board -->
+      <section id="classification-section">
+        <h2>🏆 Clasificación</h2>
+        <div id="classification-board">
+          <p class="empty-msg">Aún no hay jugadores. Comparte el enlace para que se unan.</p>
+        </div>
+      </section>
+
+      <!-- Called Numbers Grid -->
+      <section id="called-numbers">
+        <h2>Números sacados</h2>
+        <div class="called-grid" id="called-grid"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Win Overlay -->
+  <div id="win-overlay" class="overlay hidden">
+    <div class="win-modal">
+      <h2>🎉 ¡BINGO! 🎉</h2>
+      <p id="win-message">¡Alguien ha ganado!</p>
+      <button id="play-again-btn" class="btn btn-primary">Nuevo juego</button>
+      <button id="return-btn" class="btn btn-secondary">Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (compat mode) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- Firebase config and init -->
+  <script src="/js/firebase.config.js?v=11"></script>
+  <script src="/js/firebase-init.js?v=11"></script>
+  <script src="/js/shared.js?v=11"></script>
+  <script src="/js/host.js?v=11"></script>
+</body>
+</html>

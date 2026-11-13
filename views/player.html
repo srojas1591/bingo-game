@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <title>Bingo — Jugador</title>
+  <link rel="stylesheet" href="/styles/player.css?v=11">
+</head>
+<body>
+  <!-- Matrix animated background -->
+  <div class="background">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <!-- Join Form Screen -->
+  <div id="join-screen" class="screen">
+    <div class="join-box">
+      <h1>🎱 Bingo</h1>
+      <p class="join-subtitle">¡Únete al juego!</p>
+      
+      <div class="player-id-display">
+        <p class="id-label">Tu ID de jugador</p>
+        <p class="id-value" id="player-id-display">-----</p>
+      </div>
+
+      <form id="join-form">
+        <input type="text" id="player-name" placeholder="Tu nombre" maxlength="20" required autofocus>
+        <button type="submit" class="btn btn-primary">Jugar</button>
+      </form>
+      <p id="join-error" class="error hidden">Ingresa tu nombre para continuar.</p>
+    </div>
+  </div>
+
+  <!-- Player Game Screen -->
+  <div id="game-screen" class="screen hidden">
+    <div id="app">
+      <header>
+        <h1>🎱 Tu Cartón</h1>
+        <p id="player-info"></p>
+        <p id="status">Esperando a que el anfitrión saque números...</p>
+      </header>
+
+      <!-- Current Ball -->
+      <section id="called-number">
+        <div class="ball" id="current-ball">--</div>
+        <p id="called-label">Número actual</p>
+      </section>
+
+      <!-- Called Numbers Counter -->
+      <section id="called-info">
+        <p>Números sacados: <strong id="called-count">0</strong>/75</p>
+      </section>
+
+      <!-- Bingo Card -->
+      <section id="bingo-card">
+        <div class="card-grid" id="card-grid"></div>
+      </section>
+
+      <!-- Called Numbers Grid -->
+      <section id="called-numbers">
+        <h2>Números sacados</h2>
+        <div class="called-grid" id="called-grid"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Win Overlay -->
+  <div id="win-overlay" class="overlay hidden">
+    <div class="win-modal">
+      <h2>🎉 ¡BINGO! 🎉</h2>
+      <p id="win-message">¡Has ganado!</p>
+      <button id="return-btn" class="btn btn-primary">Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK (compat mode) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- Firebase config and init -->
+  <script src="/js/firebase.config.js?v=11"></script>
+  <script src="/js/firebase-init.js?v=11"></script>
+  <script src="/js/shared.js?v=11"></script>
+  <script src="/js/player.js?v=11"></script>
+</body>
+</html>

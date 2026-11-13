@@ -1,0 +1,8 @@
+# macOS
+.DS_Store
+
+# Junie agent session data
+.junie/
+
+# Node modules (if any)
+node_modules/

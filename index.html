@@ -227,6 +227,23 @@
       margin-top: 8px;
       opacity: 0.8;
     }
+    .router-btn.disabled {
+      pointer-events: none;
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .player-status {
+      font-size: 1rem;
+      color: #00ff2a;
+      opacity: 0.7;
+      margin-top: 16px;
+      min-height: 1.5em;
+    }
+    .player-status.active {
+      opacity: 1;
+      color: #00ff41;
+      text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+    }
 
     @media (max-width: 600px) {
       .router-box h1 { font-size: 3.5rem; }
@@ -260,11 +277,19 @@
         🎤 Soy el Anfitrión
         <span>Controla el juego y saca los números</span>
       </a>
-      <a href="views/player.html" class="router-btn player">
+      <a href="views/player.html" class="router-btn player" id="player-btn">
         🎮 Soy Jugador
         <span>Únete al juego con tu cartón</span>
       </a>
+      <p class="player-status" id="player-status">Esperando a que el anfitrión inicie el juego...</p>
     </div>
   </div>
+
+  <!-- Firebase SDK (compat mode) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="js/firebase.config.js?v=18"></script>
+  <script src="js/firebase-init.js?v=18"></script>
+  <script src="js/router.js?v=18"></script>
 </body>
 </html>

@@ -62,6 +62,42 @@
       }
     });
 
+    // Check if host is active before allowing join
+    function isHostActive() {
+      return new Promise((resolve) => {
+        db.ref('bingo-game/host').once('value').then((snap) => {
+          const data = snap.val();
+          resolve(data && data.authenticated === true);
+        }).catch(() => {
+          resolve(false);
+        });
+      });
+    }
+
+    // Listen to host status on the join screen — show warning if no host
+    const joinSubtitle = document.querySelector('.join-subtitle');
+    db.ref('bingo-game/host').on('value', (snap) => {
+      const data = snap.val();
+      if (!data || data.authenticated !== true) {
+        // No active host — show warning on join screen
+        if (joinSubtitle) {
+          joinSubtitle.textContent = '⚠️ Esperando a que el anfitrión inicie el juego...';
+        }
+        if (joinError) {
+          joinError.textContent = 'No hay un anfitrión activo. Vuelve al inicio.';
+          joinError.classList.remove('hidden');
+        }
+      } else {
+        // Host is active — normal join screen
+        if (joinSubtitle) {
+          joinSubtitle.textContent = '¡Únete al juego!';
+        }
+        if (joinError) {
+          joinError.classList.add('hidden');
+        }
+      }
+    });
+
     // ===== Join Form =====
     joinForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -76,8 +112,18 @@
       joinError.classList.add('hidden');
       playerName = name;
 
-      // Generate card and join game
-      joinGame();
+      // Check if host is active before joining
+      isHostActive().then((active) => {
+        if (!active) {
+          console.log('[Player] No active host — blocking join');
+          joinError.textContent = 'No hay un anfitrión activo. Vuelve al inicio y espera a que el anfitrión inicie el juego.';
+          joinError.classList.remove('hidden');
+          return;
+        }
+        console.log('[Player] Host is active — allowing join');
+        // Generate card and join game
+        joinGame();
+      });
     });
 
     // ===== Join Game =====

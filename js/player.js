@@ -116,7 +116,7 @@
           if (data.calledNumbers && data.calledNumbers.length === 0 && calledNumbers.length > 0) {
             // Game was reset — redirect to re-join
             console.log('[Player] Game reset detected');
-            window.location.href = '/player';
+            window.location.href = '/';
             return;
           }
 
@@ -292,7 +292,7 @@
     const returnBtn = document.getElementById('return-btn');
     if (returnBtn) {
       returnBtn.addEventListener('click', () => {
-        window.location.href = '/player';
+        window.location.href = '/';
       });
     }
 

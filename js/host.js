@@ -360,7 +360,7 @@
     const returnBtn = document.getElementById('return-btn');
     if (returnBtn) {
       returnBtn.addEventListener('click', () => {
-        window.location.href = '/host';
+        window.location.href = '/';
       });
     }
 

@@ -9,6 +9,7 @@
   let callIndex = 0;
   let gameOver = false;
   let authenticated = false;
+  let heartbeatInterval = null;
 
   // ===== Initialize when DOM is ready =====
   function init() {
@@ -54,15 +55,7 @@
     // Back button — clean Firebase and return to index.html (use relative URL for GitHub Pages)
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        console.log('[Host] Back button clicked — cleaning Firebase game state');
-        db.ref('bingo-game').remove().then(() => {
-          console.log('[Host] Firebase cleaned, redirecting to home');
-          window.location.href = '../index.html';
-        }).catch((err) => {
-          console.error('[Host] Error cleaning Firebase:', err);
-          // Still redirect even if cleanup fails
-          window.location.href = '../index.html';
-        });
+        cleanupAndLeave();
       });
     }
 
@@ -97,6 +90,49 @@
       }
     });
 
+    // ===== Heartbeat: keep host session alive =====
+    function startHeartbeat() {
+      // Write current timestamp every 10 seconds so router.js knows the host is alive
+      const gameRef = db.ref('bingo-game/host');
+      gameRef.update({ lastSeen: Date.now() });
+      heartbeatInterval = setInterval(() => {
+        gameRef.update({ lastSeen: Date.now() });
+      }, 10000);
+      console.log('[Host] Heartbeat started');
+    }
+
+    function stopHeartbeat() {
+      if (heartbeatInterval) {
+        clearInterval(heartbeatInterval);
+        heartbeatInterval = null;
+        console.log('[Host] Heartbeat stopped');
+      }
+    }
+
+    // ===== Cleanup Firebase and redirect home =====
+    function cleanupAndLeave() {
+      stopHeartbeat();
+      console.log('[Host] Cleaning Firebase game state');
+      db.ref('bingo-game').remove().then(() => {
+        console.log('[Host] Firebase cleaned, redirecting to home');
+        window.location.href = '../index.html';
+      }).catch((err) => {
+        console.error('[Host] Error cleaning Firebase:', err);
+        window.location.href = '../index.html';
+      });
+    }
+
+    // Listen for tab close — clean up Firebase before leaving
+    window.addEventListener('beforeunload', () => {
+      console.log('[Host] Tab closing — cleaning Firebase');
+      // Use sendBeacon for reliable fire-and-forget on unload
+      stopHeartbeat();
+      // Firebase remove is async, but we can try a best-effort cleanup
+      if (db && authenticated) {
+        db.ref('bingo-game').remove();
+      }
+    });
+
     // ===== Authenticate Host =====
     function authenticateHost() {
       console.log('[Host] Authenticating as host');
@@ -104,13 +140,14 @@
 
       // First, clear any stale game state from previous sessions
       gameRef.remove().then(() => {
-        // Then initialize fresh game state
+        // Then initialize fresh game state with lastSeen timestamp
         return gameRef.child('host').set({
           authenticated: true,
           calledNumbers: [],
           callIndex: 0,
           gameOver: false,
-          winners: []
+          winners: [],
+          lastSeen: Date.now()
         });
       }).then(() => {
         console.log('[Host] Game state initialized in Firebase');
@@ -118,6 +155,9 @@
         authScreen.classList.add('hidden');
         dashboard.classList.remove('hidden');
         ensureAudio();
+
+        // Start heartbeat to keep session alive
+        startHeartbeat();
 
         // Render the called numbers grid immediately (empty at start)
         renderCalledGrid();
@@ -389,14 +429,7 @@
     const returnBtn = document.getElementById('return-btn');
     if (returnBtn) {
       returnBtn.addEventListener('click', () => {
-        console.log('[Host] Return button clicked — cleaning Firebase game state');
-        db.ref('bingo-game').remove().then(() => {
-          console.log('[Host] Firebase cleaned, redirecting to home');
-          window.location.href = '../index.html';
-        }).catch((err) => {
-          console.error('[Host] Error cleaning Firebase:', err);
-          window.location.href = '../index.html';
-        });
+        cleanupAndLeave();
       });
     }
 

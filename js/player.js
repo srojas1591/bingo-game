@@ -62,12 +62,21 @@
       }
     });
 
-    // Check if host is active before allowing join
+    // Check if host is active and alive (heartbeat within last 30 seconds)
     function isHostActive() {
       return new Promise((resolve) => {
         db.ref('bingo-game/host').once('value').then((snap) => {
           const data = snap.val();
-          resolve(data && data.authenticated === true);
+          if (!data || data.authenticated !== true) {
+            resolve(false);
+            return;
+          }
+          if (!data.lastSeen) {
+            resolve(false); // No heartbeat = stale session
+            return;
+          }
+          const STALE_THRESHOLD = 30000; // 30 seconds
+          resolve((Date.now() - data.lastSeen) < STALE_THRESHOLD);
         }).catch(() => {
           resolve(false);
         });
@@ -78,7 +87,8 @@
     const joinSubtitle = document.querySelector('.join-subtitle');
     db.ref('bingo-game/host').on('value', (snap) => {
       const data = snap.val();
-      if (!data || data.authenticated !== true) {
+      const alive = data && data.authenticated === true && data.lastSeen && (Date.now() - data.lastSeen) < 30000;
+      if (!alive) {
         // No active host — show warning on join screen
         if (joinSubtitle) {
           joinSubtitle.textContent = '⚠️ Esperando a que el anfitrión inicie el juego...';

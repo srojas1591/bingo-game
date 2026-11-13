@@ -30,25 +30,39 @@
 
   console.log('[Router] Listening for host authentication...');
 
+  // Check if host session is alive (heartbeat within last 30 seconds)
+  function isHostAlive(data) {
+    if (!data || data.authenticated !== true) return false;
+    if (!data.lastSeen) return false; // No heartbeat = stale session
+    const now = Date.now();
+    const STALE_THRESHOLD = 30000; // 30 seconds
+    return (now - data.lastSeen) < STALE_THRESHOLD;
+  }
+
   // Listen to host authentication status
   db.ref('bingo-game/host').on('value', (snap) => {
     const data = snap.val();
 
-    if (data && data.authenticated === true) {
-      // Host is authenticated — enable player button
+    if (isHostAlive(data)) {
+      // Host is authenticated and alive — enable player button
       if (playerBtn.classList.contains('disabled')) {
         playerBtn.classList.remove('disabled');
         playerStatus.textContent = '¡Juego activo! Toca "Soy Jugador" para unirte.';
         playerStatus.classList.add('active');
-        console.log('[Router] Host authenticated — player button enabled');
+        console.log('[Router] Host authenticated and alive — player button enabled');
       }
     } else {
-      // No host or not authenticated — disable player button
+      // No host or stale session — disable player button
       if (!playerBtn.classList.contains('disabled')) {
         playerBtn.classList.add('disabled');
         playerStatus.textContent = 'Esperando a que el anfitrión inicie el juego...';
         playerStatus.classList.remove('active');
-        console.log('[Router] No active host — player button disabled');
+        console.log('[Router] No active host (stale or missing) — player button disabled');
+      }
+      // Auto-cleanup stale sessions: if authenticated but no heartbeat, remove the data
+      if (data && data.authenticated === true && !isHostAlive(data)) {
+        console.log('[Router] Cleaning up stale host session');
+        db.ref('bingo-game').remove();
       }
     }
   });

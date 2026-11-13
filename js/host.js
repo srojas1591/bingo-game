@@ -51,10 +51,18 @@
       return;
     }
 
-    // Back button — return to index.html (use relative URL for GitHub Pages)
+    // Back button — clean Firebase and return to index.html (use relative URL for GitHub Pages)
     if (backBtn) {
       backBtn.addEventListener('click', () => {
-        window.location.href = '../index.html';
+        console.log('[Host] Back button clicked — cleaning Firebase game state');
+        db.ref('bingo-game').remove().then(() => {
+          console.log('[Host] Firebase cleaned, redirecting to home');
+          window.location.href = '../index.html';
+        }).catch((err) => {
+          console.error('[Host] Error cleaning Firebase:', err);
+          // Still redirect even if cleanup fails
+          window.location.href = '../index.html';
+        });
       });
     }
 
@@ -381,7 +389,14 @@
     const returnBtn = document.getElementById('return-btn');
     if (returnBtn) {
       returnBtn.addEventListener('click', () => {
-        window.location.href = '../index.html';
+        console.log('[Host] Return button clicked — cleaning Firebase game state');
+        db.ref('bingo-game').remove().then(() => {
+          console.log('[Host] Firebase cleaned, redirecting to home');
+          window.location.href = '../index.html';
+        }).catch((err) => {
+          console.error('[Host] Error cleaning Firebase:', err);
+          window.location.href = '../index.html';
+        });
       });
     }
 

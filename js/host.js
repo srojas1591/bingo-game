@@ -94,13 +94,16 @@
       console.log('[Host] Authenticating as host');
       const gameRef = db.ref('bingo-game');
 
-      // Initialize game state in Firebase
-      gameRef.child('host').set({
-        authenticated: true,
-        calledNumbers: [],
-        callIndex: 0,
-        gameOver: false,
-        winners: []
+      // First, clear any stale game state from previous sessions
+      gameRef.remove().then(() => {
+        // Then initialize fresh game state
+        return gameRef.child('host').set({
+          authenticated: true,
+          calledNumbers: [],
+          callIndex: 0,
+          gameOver: false,
+          winners: []
+        });
       }).then(() => {
         console.log('[Host] Game state initialized in Firebase');
         authenticated = true;
@@ -112,6 +115,9 @@
         gameRef.child('host').on('value', (snap) => {
           const data = snap.val();
           if (!data) return;
+
+          // Skip our own writes — only react to changes from other clients (players triggering wins)
+          // The host manages its own calledNumbers locally via the call button
 
           // Check if game was reset (new game)
           if (data.calledNumbers && data.calledNumbers.length === 0 && calledNumbers.length > 0) {
@@ -129,7 +135,8 @@
             statusEl.textContent = 'Nuevo juego iniciado. Presiona "Sacar número"';
           }
 
-          // Update called numbers
+          // Update called numbers only when they change from Firebase
+          // (This handles the case where another host instance writes)
           if (data.calledNumbers && data.calledNumbers.length !== calledNumbers.length) {
             calledNumbers = data.calledNumbers;
             callIndex = data.callIndex || 0;

@@ -110,9 +110,17 @@
         // Listen to host state for called numbers and game over
         gameRef.child('host').on('value', (snap) => {
           const data = snap.val();
-          if (!data) return;
 
-          // Check if game was reset (new game)
+          // If host data is gone, the game was reset
+          if (!data) {
+            if (calledNumbers.length > 0 || gameOver) {
+              console.log('[Player] Game reset detected (host data removed)');
+              window.location.href = '/';
+            }
+            return;
+          }
+
+          // Check if game was reset (new game) — calledNumbers cleared
           if (data.calledNumbers && data.calledNumbers.length === 0 && calledNumbers.length > 0) {
             // Game was reset — redirect to re-join
             console.log('[Player] Game reset detected');
